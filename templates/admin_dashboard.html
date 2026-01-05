@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgriSmart Admin Dashboard</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+/* CSS Variables for Green Theme */
+:root {
+  --primary-green: #10B981;
+  --dark-green: #047857;
+  --light-green: #D1FAE5;
+  --accent-green: #34D399;
+  --color-bg: #F9FAFB;
+  --color-text: #1F2937;
+  --color-card-bg: #FFFFFF;
+  --color-card-border: #E5E7EB;
+  --color-input-bg: #FFFFFF;
+  --color-input-border: #D1D5DB;
+  --color-section-bg: #F9FAFB;
+  --color-text-muted: #6B7280;
+  --color-text-light: #9CA3AF;
+  --hero-gradient-1: #059669;
+  --hero-gradient-2: #10B981;
+  --hero-gradient-3: #34D399;
+  --glow-color: rgba(16, 185, 129, 0.3);
+}
+
+/* Basic Reset */
+* { 
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body { 
+  display: flex; 
+  min-height: 100vh; 
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+/* Desktop Sidebar */
+.sidebar { 
+  width: 250px; 
+  background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 50%, var(--accent-green) 100%);
+  color: #fff; 
+  display: flex; 
+  flex-direction: column;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.08) 0%, transparent 45%);
+  pointer-events: none;
+}
+
+.sidebar h2 { 
+  text-align: center; 
+  padding: 20px; 
+  font-size: 1.5rem; 
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 2;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar h2 i {
+  margin-right: 8px;
+  animation: leafFloat 3s ease-in-out infinite;
+}
+
+@keyframes leafFloat {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(2deg); }
+}
+
+.sidebar a { 
+  padding: 15px 20px; 
+  color: rgba(255, 255, 255, 0.9); 
+  text-decoration: none; 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
+  border-left: 3px solid transparent;
+  font-weight: 500;
+}
+
+.sidebar a:hover, .sidebar a.active { 
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  border-left-color: #fff;
+  transform: translateX(3px);
+}
+
+.sidebar a i { 
+  width: 20px; 
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.sidebar a:hover i {
+  transform: scale(1.1);
+}
+
+/* Top Header Mobile */
+.top-header {
+  display: none;
+  background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 50%, var(--accent-green) 100%);
+  color: white;
+  padding: 1rem 1.5rem;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-logo {
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.menu-toggle {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.menu-toggle:active {
+  transform: scale(0.9);
+}
+
+/* Mobile Drawer */
+.mobile-drawer {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 250px;
+  height: 100vh;
+  background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 50%, var(--accent-green) 100%);
+  z-index: 1000;
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  overflow-y: auto;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-drawer.open {
+  transform: translateX(0);
+}
+
+.mobile-drawer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.08) 0%, transparent 45%);
+  pointer-events: none;
+}
+
+.drawer-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 2;
+}
+
+.drawer-header h3 {
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: white;
+}
+
+.mobile-drawer a {
+  padding: 15px 1.5rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
+  border-left: 3px solid transparent;
+  font-weight: 500;
+}
+
+.mobile-drawer a:hover, .mobile-drawer a.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border-left-color: #fff;
+  transform: translateX(3px);
+}
+
+.mobile-drawer a i {
+  width: 20px;
+  text-align: center;
+}
+
+/* Drawer Overlay */
+.drawer-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.drawer-overlay.active {
+  display: block;
+  opacity: 1;
+}
+
+/* Main Content */
+.main { 
+  flex: 1; 
+  padding: 30px; 
+  overflow-x: auto;
+  background: var(--color-bg);
+}
+
+/* Header Cards */
+.cards { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 25px; 
+  margin-bottom: 30px; 
+}
+
+.card { 
+  flex: 1; 
+  min-width: 220px; 
+  background: var(--color-card-bg);
+  border-radius: 16px; 
+  padding: 30px 25px; 
+  text-align: center; 
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--color-card-border);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-green), var(--accent-green));
+  border-radius: 16px 16px 0 0;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(16, 185, 129, 0.15);
+}
+
+.card h3 { 
+  font-size: 1rem; 
+  color: var(--color-text-muted); 
+  margin-bottom: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card p { 
+  font-size: 2.2rem; 
+  font-weight: 700; 
+  color: var(--color-text);
+  background: linear-gradient(45deg, var(--primary-green), var(--accent-green));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Charts Row */
+.charts-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  margin-bottom: 35px;
+}
+
+.chart-container {
+  flex: 1;
+  min-width: 400px;
+  background: var(--color-card-bg);
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--color-card-border);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.chart-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-green), var(--accent-green));
+  border-radius: 16px 16px 0 0;
+}
+
+.chart-container:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(16, 185, 129, 0.12);
+}
+
+.chart-container h3 {
+  margin-bottom: 20px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-container h3::before {
+  content: '';
+  width: 3px;
+  height: 20px;
+  background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+  border-radius: 2px;
+}
+
+.chart-wrapper {
+  height: 320px;
+  position: relative;
+}
+
+/* Tables */
+.table-container { 
+  overflow: hidden;
+  background: var(--color-card-bg);
+  border-radius: 16px; 
+  padding: 0;
+  margin-bottom: 30px; 
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--color-card-border);
+  position: relative;
+}
+
+.table-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary-green), var(--accent-green));
+  border-radius: 16px 16px 0 0;
+}
+
+.table-container h3 {
+  padding: 25px 30px 15px;
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(52, 211, 153, 0.03));
+  border-bottom: 2px solid var(--color-card-border);
+}
+
+.table-container h3::before {
+  content: '';
+  width: 4px;
+  height: 24px;
+  background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+  border-radius: 2px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table { 
+  width: 100%; 
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  min-width: 1000px;
+}
+
+th, td { 
+  padding: 18px 20px; 
+  text-align: left;
+  border-bottom: 1px solid var(--color-card-border);
+}
+
+th { 
+  background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+  color: #fff; 
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.85rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+th:first-child {
+  border-top-left-radius: 0;
+}
+
+th:last-child {
+  border-top-right-radius: 0;
+}
+
+tbody tr {
+  transition: all 0.2s ease;
+}
+
+tbody tr:nth-child(even) { 
+  background: rgba(16, 185, 129, 0.02);
+}
+
+tbody tr:hover { 
+  background: rgba(16, 185, 129, 0.08);
+  transform: scale(1.01);
+}
+
+tbody td {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+/* Badges */
+.role-badge { 
+  padding: 6px 14px; 
+  border-radius: 25px; 
+  font-size: 0.75rem; 
+  font-weight: 600; 
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.role-admin { 
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+}
+
+.role-user { 
+  background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+}
+
+/* Image styling in tables */
+table img {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+table img:hover {
+  transform: scale(1.1);
+}
+
+/* Section visibility */
+.table-container[style*="display:none"] {
+  display: none !important;
+}
+
+/* Loading animation */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.loading {
+  animation: pulse 2s infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-section-bg);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dark-green);
+}
+
+/* Responsive Design */
+@media(max-width: 1024px) {
+  .main {
+    padding: 20px;
+  }
+  
+  .chart-container {
+    min-width: 100%;
+  }
+  
+  table {
+    min-width: 800px;
+  }
+}
+
+@media(max-width: 768px) { 
+  .sidebar {
+    display: none;
+  }
+
+  .top-header {
+    display: flex;
+  }
+
+  .mobile-drawer {
+    display: block;
+  }
+
+  body {
+    flex-direction: column;
+  }
+  
+  .main {
+    padding: 1.5rem;
+    padding-top: 70px;
+  }
+
+  .cards { 
+    flex-direction: column; 
+    gap: 15px;
+  }
+
+  .card {
+    min-width: 100%;
+    padding: 20px;
+  }
+
+  .card h3 {
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+  }
+
+  .card p {
+    font-size: 1.8rem;
+  }
+  
+  .chart-container {
+    min-width: 100%;
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .chart-container h3 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+  }
+  
+  .chart-wrapper {
+    height: 250px;
+  }
+  
+  .table-container {
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+
+  .table-container h3 {
+    padding: 20px 15px 10px;
+    font-size: 1.1rem;
+  }
+  
+  th, td {
+    padding: 12px 10px;
+    font-size: 0.8rem;
+  }
+
+  .role-badge {
+    padding: 5px 10px;
+    font-size: 0.7rem;
+  }
+
+  table img {
+    width: 40px;
+    height: 40px;
+  }
+  
+  table {
+    min-width: 700px;
+  }
+}
+
+@media(max-width: 640px) {
+  .top-header {
+    padding: 0.9rem 1rem;
+  }
+
+  .header-logo {
+    font-size: 1.1rem;
+  }
+
+  .main {
+    padding: 1rem;
+    padding-top: 65px;
+  }
+
+  .cards {
+    gap: 12px;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  .card h3 {
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+  }
+
+  .card p {
+    font-size: 1.5rem;
+  }
+
+  .chart-container {
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+
+  .chart-container h3 {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .chart-wrapper {
+    height: 200px;
+  }
+
+  .table-container {
+    margin-bottom: 15px;
+  }
+
+  .table-container h3 {
+    padding: 15px 12px 8px;
+    font-size: 1rem;
+  }
+
+  th, td {
+    padding: 10px 8px;
+    font-size: 0.75rem;
+  }
+
+  .role-badge {
+    padding: 4px 8px;
+    font-size: 0.65rem;
+  }
+
+  table img {
+    width: 35px;
+    height: 35px;
+  }
+
+  .table-wrapper {
+    font-size: 0.75rem;
+  }
+  
+  table {
+    min-width: 600px;
+  }
+}
+
+@media(max-width: 480px) {
+  .top-header {
+    padding: 0.8rem 0.75rem;
+  }
+
+  .header-logo {
+    font-size: 1rem;
+  }
+
+  .menu-toggle {
+    font-size: 1.3rem;
+  }
+
+  .main {
+    padding: 0.75rem;
+    padding-top: 60px;
+  }
+
+  .cards {
+    gap: 10px;
+  }
+
+  .card {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .card h3 {
+    font-size: 0.75rem;
+    margin-bottom: 8px;
+  }
+
+  .card p {
+    font-size: 1.3rem;
+  }
+
+  .chart-container {
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+  }
+
+  .chart-container h3 {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+
+  .chart-wrapper {
+    height: 180px;
+  }
+
+  .table-container {
+    border-radius: 12px;
+    margin-bottom: 12px;
+  }
+
+  .table-container h3 {
+    padding: 12px 10px 6px;
+    font-size: 0.9rem;
+  }
+
+  th, td {
+    padding: 8px 6px;
+    font-size: 0.7rem;
+  }
+
+  .role-badge {
+    padding: 3px 6px;
+    font-size: 0.6rem;
+  }
+
+  table img {
+    width: 30px;
+    height: 30px;
+  }
+  
+  table {
+    min-width: 500px;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Top Header Mobile -->
+<div class="top-header">
+  <div class="header-left">
+    <button class="menu-toggle" onclick="toggleMobileMenu()">
+      <i class="fas fa-bars"></i>
+    </button>
+    <div class="header-logo">
+      <i class="fas fa-seedling"></i>
+      <span>AgriSmart</span>
+    </div>
+  </div>
+</div>
+
+<!-- Drawer Overlay -->
+<div class="drawer-overlay" onclick="closeMobileMenu()"></div>
+
+<!-- Mobile Drawer -->
+<div class="mobile-drawer">
+  <div class="drawer-header">
+    <h3><i class="fas fa-seedling"></i> AgriSmart</h3>
+  </div>
+  <a href="#" class="active" onclick="showSection('users-section'); closeMobileMenu()"><i class="fas fa-users"></i> Users</a>
+  <a href="#" onclick="showSection('crops-section'); closeMobileMenu()"><i class="fas fa-leaf"></i> Crops</a>
+  <a href="#" onclick="showSection('diseases-section'); closeMobileMenu()"><i class="fas fa-bug"></i> Diseases</a>
+  <a href="#" onclick="showSection('chats-section'); closeMobileMenu()"><i class="fas fa-comments"></i> Chats</a>
+  <a href="{{ url_for('logout') }}" onclick="closeMobileMenu()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</div>
+
+<!-- Desktop Sidebar -->
+<div class="sidebar">
+  <h2><i class="fas fa-seedling"></i> AgriSmart</h2>
+  <a href="#" class="active" onclick="showSection('users-section')"><i class="fas fa-users"></i> Users</a>
+  <a href="#" onclick="showSection('crops-section')"><i class="fas fa-leaf"></i> Crops</a>
+  <a href="#" onclick="showSection('diseases-section')"><i class="fas fa-bug"></i> Diseases</a>
+  <a href="#" onclick="showSection('chats-section')"><i class="fas fa-comments"></i> Chats</a>
+  <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <!-- Header Cards -->
+  <div class="cards">
+    <div class="card">
+      <h3>Total Users</h3>
+      <p>{{ users|length }}</p>
+    </div>
+    <div class="card">
+      <h3>Unique Crops</h3>
+      <p>{{ unique_crop_count }}</p>
+    </div>
+    <div class="card">
+      <h3>Unique Diseases</h3>
+      <p>{{ unique_disease_count }}</p>
+    </div>
+    <div class="card">
+      <h3>Total Chats</h3>
+      <p>{{ chats|length }}</p>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="charts-row">
+    <!-- Crop Pie Chart -->
+    <div class="chart-container">
+      <h3><i class="fas fa-chart-pie"></i> Crop Distribution</h3>
+      <div class="chart-wrapper">
+        <canvas id="cropPieChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Disease Pie Chart -->
+    <div class="chart-container">
+      <h3><i class="fas fa-chart-pie"></i> Disease Frequency</h3>
+      <div class="chart-wrapper">
+        <canvas id="diseasePieChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Users Section -->
+  <div id="users-section" class="table-container">
+    <h3><i class="fas fa-users"></i> Users Management</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th><i class="fas fa-user"></i> Name</th>
+            <th><i class="fas fa-envelope"></i> Email</th>
+            <th><i class="fas fa-shield-alt"></i> Role</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td>{{ u.name }}</td>
+            <td>{{ u.email }}</td>
+            <td>
+              <span class="role-badge {% if u.role=='admin' %}role-admin{% else %}role-user{% endif %}">
+                {{ u.role|title }}
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Crops Section -->
+  <div id="crops-section" class="table-container" style="display:none;">
+    <h3><i class="fas fa-leaf"></i> Crop Recommendations</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Crop</th>
+            <th>pH</th>
+            <th>Nutrients</th>
+            <th>Temp</th>
+            <th>Humidity</th>
+            <th>Rainfall</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in crops %}
+          <tr>
+            <td>{{ c.user_name }}</td>
+            <td><strong>{{ c.recommended_crop|title }}</strong></td>
+            <td>{{ c.soil_data.ph }}</td>
+            <td>{{ c.soil_data.nutrients }}</td>
+            <td>{{ c.weather_data.temperature }}°C</td>
+            <td>{{ c.weather_data.humidity }}%</td>
+            <td>{{ c.weather_data.rainfall }}mm</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Diseases Section -->
+  <div id="diseases-section" class="table-container" style="display:none;">
+    <h3><i class="fas fa-bug"></i> Disease Detection</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Disease</th>
+            <th>Description</th>
+            <th>Treatment</th>
+            <th>Image</th>
+            <th>Supplement</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in diseases %}
+          <tr>
+            <td>{{ d.user_name }}</td>
+            <td><strong>{{ d.disease_name|title }}</strong></td>
+            <td>{{ d.disease_description }}</td>
+            <td>{{ d.possible_steps }}</td>
+            <td>
+              {% if d.disease_image_url %}
+                <img src="{{ d.disease_image_url }}" alt="{{ d.disease_name }}">
+              {% else %}
+                <span style="color: #6B7280;">No image</span>
+              {% endif %}
+            </td>
+            <td>{{ d.supplement_name }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Chats Section -->
+  <div id="chats-section" class="table-container" style="display:none;">
+    <h3><i class="fas fa-comments"></i> Chat History</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Question</th>
+            <th>Answer</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for ch in chats %}
+          <tr>
+            <td>{{ ch.user_name }}</td>
+            <td>{{ ch.question }}</td>
+            <td>{{ ch.answer }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// Mobile Menu Functions
+function toggleMobileMenu() {
+  const drawer = document.querySelector('.mobile-drawer');
+  const overlay = document.querySelector('.drawer-overlay');
+  drawer.classList.toggle('open');
+  overlay.classList.toggle('active');
+}
+
+function closeMobileMenu() {
+  const drawer = document.querySelector('.mobile-drawer');
+  const overlay = document.querySelector('.drawer-overlay');
+  drawer.classList.remove('open');
+  overlay.classList.remove('active');
+}
+
+// Sidebar navigation - FIXED VERSION
+function showSection(id) {
+  console.log('Showing section:', id);
+  
+  const sections = ['users-section', 'crops-section', 'diseases-section', 'chats-section'];
+  const desktopLinks = document.querySelectorAll('.sidebar a');
+  const mobileLinks = document.querySelectorAll('.mobile-drawer a');
+  
+  // Hide all sections
+  sections.forEach(s => {
+    const element = document.getElementById(s);
+    if (element) {
+      element.style.display = 'none';
+    }
+  });
+  
+  // Show selected section
+  const selectedSection = document.getElementById(id);
+  if (selectedSection) {
+    selectedSection.style.display = 'block';
+  }
+  
+  // Update active link desktop
+  desktopLinks.forEach(link => link.classList.remove('active'));
+  const activeDesktop = document.querySelector(`.sidebar a[onclick*="${id}"]`);
+  if (activeDesktop) activeDesktop.classList.add('active');
+
+  // Update active link mobile
+  mobileLinks.forEach(link => link.classList.remove('active'));
+  const activeMobile = document.querySelector(`.mobile-drawer a[onclick*="${id}"]`);
+  if (activeMobile) activeMobile.classList.add('active');
+}
+
+// Chart colors matching the green theme
+const greenColors = [
+  '#047857', '#10B981', '#34D399', '#6EE7B7', '#A7F3D0', 
+  '#065F46', '#059669', '#10B981', '#34D399', '#6EE7B7'
+];
+
+const diseaseColors = [
+  '#d97706', '#16a34a', '#2563eb', '#9333ea', '#ef4444', 
+  '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#f87171'
+];
+
+// Crop Pie Chart
+new Chart(document.getElementById('cropPieChart'), {
+  type: 'pie',
+  data: {
+    labels: {{ crop_chart_labels|tojson }},
+    datasets: [{
+      data: {{ crop_chart_values|tojson }},
+      backgroundColor: greenColors,
+      borderWidth: 2,
+      borderColor: '#fff',
+      hoverBorderWidth: 3,
+      hoverBorderColor: '#047857'
+    }]
+  },
+  options: { 
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { 
+      legend: { 
+        position: 'right',
+        labels: { 
+          boxWidth: 15, 
+          padding: 15,
+          usePointStyle: true,
+          font: {
+            family: 'Inter',
+            size: 12,
+            weight: '500'
+          }
+        }
+      }
+    },
+    animation: {
+      animateScale: true,
+      duration: 2000
+    }
+  }
+});
+
+// Disease Pie Chart
+new Chart(document.getElementById('diseasePieChart'), {
+  type: 'pie',
+  data: {
+    labels: {{ disease_chart_labels|tojson }},
+    datasets: [{
+      data: {{ disease_chart_values|tojson }},
+      backgroundColor: diseaseColors,
+      borderWidth: 2,
+      borderColor: '#fff',
+      hoverBorderWidth: 3,
+      hoverBorderColor: '#047857'
+    }]
+  },
+  options: { 
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { 
+      legend: { 
+        position: 'right',
+        labels: { 
+          boxWidth: 15, 
+          padding: 15,
+          usePointStyle: true,
+          font: {
+            family: 'Inter',
+            size: 12,
+            weight: '500'
+          }
+        }
+      }
+    },
+    animation: {
+      animateScale: true,
+      duration: 2000
+    }
+  }
+});
+
+// Add hover effects and animations
+document.addEventListener('DOMContentLoaded', function() {
+  // Animate cards on load
+  const cards = document.querySelectorAll('.card');
+  cards.forEach((card, index) => {
+    card.style.animationDelay = `${index * 0.1}s`;
+    card.style.animation = 'slideUp 0.6s ease forwards';
+  });
+  
+  // Animate chart containers
+  const chartContainers = document.querySelectorAll('.chart-container');
+  chartContainers.forEach((container, index) => {
+    container.style.animationDelay = `${0.4 + index * 0.2}s`;
+    container.style.animation = 'slideUp 0.6s ease forwards';
+  });
+  
+  // Initialize with users section
+  showSection('users-section');
+});
+
+// CSS animations
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+document.head.appendChild(style);
+</script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+{
+    "Dadu": {
+        "avg_humidity": 59.20439560439562,
+        "avg_temp": 22.01868131868132,
+        "timestamp": "2026-01-01T10:51:01.017799",
+        "total_rainfall": 0.0
+    },
+    "Jamshoro": {
+        "avg_humidity": 66.93406593406593,
+        "avg_temp": 29.609890109890106,
+        "timestamp": "2025-10-30T20:32:48.612189",
+        "total_rainfall": 167.40000000000003
+    },
+    "Larkana": {
+        "avg_temp": 21.66373626373627,
+        "avg_humidity": 59.0076923076923,
+        "total_rainfall": 0.0,
+        "timestamp": "2026-01-03T21:01:35.973202"
+    },
+    "Mehar": {
+        "avg_humidity": 62.89670329670329,
+        "avg_temp": 30.658241758241775,
+        "timestamp": "2025-11-04T20:21:07.508417",
+        "total_rainfall": 245.09999999999997
+    },
+    "Okara": {
+        "avg_temp": 19.305494505494504,
+        "avg_humidity": 65.63736263736264,
+        "total_rainfall": 25.300000000000004,
+        "timestamp": "2026-01-01T10:56:39.445366"
+    },
+    "Ratodero": {
+        "avg_humidity": 61.91978021978021,
+        "avg_temp": 30.708791208791197,
+        "timestamp": "2025-11-04T20:24:14.577738",
+        "total_rainfall": 118.7
+    },
+    "Sehwan": {
+        "avg_humidity": 57.28461538461537,
+        "avg_temp": 22.262637362637356,
+        "timestamp": "2026-01-01T10:52:12.416724",
+        "total_rainfall": 0.0
+    },
+    "Tando Adam": {
+        "avg_temp": 21.02527472527473,
+        "avg_humidity": 61.050549450549454,
+        "total_rainfall": 0.30000000000000004,
+        "timestamp": "2026-01-01T11:14:58.498430"
+    },
+    "Jacobabad": {
+        "avg_temp": 21.584615384615383,
+        "avg_humidity": 60.11868131868134,
+        "total_rainfall": 0.8,
+        "timestamp": "2026-01-01T10:55:54.485623"
+    },
+    "Quetta": {
+        "avg_temp": 11.194505494505492,
+        "avg_humidity": 33.736263736263744,
+        "total_rainfall": 30.4,
+        "timestamp": "2026-01-03T17:55:05.431017"
+    },
+    "Mirpurkhas": {
+        "avg_temp": 21.20549450549451,
+        "avg_humidity": 59.8725274725275,
+        "total_rainfall": 0.8999999999999999,
+        "timestamp": "2026-01-02T10:59:30.285299"
+    },
+    "Umerkot": {
+        "avg_temp": 23.5912087912088,
+        "avg_humidity": 50.83076923076924,
+        "total_rainfall": 18.500000000000004,
+        "timestamp": "2026-01-04T11:17:43.748789"
+    }
+}

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Recommendation - AgriSmart</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/crop-recommendation.css') }}">
+</head>
+<body class="font-sans antialiased bg-gray-50 text-gray-900 transition-all duration-300">
+    
+    <!-- Hero Section -->
+    <section class="hero-section relative overflow-hidden">
+        <div class="hero-gradient"></div>
+        <div class="hero-pattern"></div>
+        <div class="container mx-auto px-4 py-20 relative z-10">
+            <div class="max-w-4xl mx-auto text-center">
+                <div class="hero-icon mb-6">
+                    <i class="fas fa-seedling text-6xl text-white"></i>
+                </div>
+                <h1 class="text-4xl md:text-6xl font-bold mb-6 text-white hero-title">
+                    Smart Crop Recommendation
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 text-green-100 hero-subtitle">
+                    Get AI-powered crop suggestions tailored to your farm's unique conditions
+                </p>
+                <div class="flex flex-wrap justify-center gap-4 mt-8">
+                    <div class="hero-badge">
+                        <i class="fas fa-brain mr-2"></i>
+                        AI-Powered Analysis
+                    </div>
+                    <div class="hero-badge">
+                        <i class="fas fa-chart-line mr-2"></i>
+                        95% Accuracy Rate
+                    </div>
+                    <div class="hero-badge">
+                        <i class="fas fa-leaf mr-2"></i>
+                        Sustainable Farming
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hero-waves">
+            <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" class="shape-fill"></path>
+                <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" class="shape-fill"></path>
+                <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" class="shape-fill"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Main Form Section -->
+    <section class="py-20 relative">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto">
+                <!-- Main Form Card -->
+                <div class="form-container">
+                    <form id="crop-form" method="POST" action="{{ url_for('crop_recommendation') }}" class="space-y-8">
+                        
+                        <!-- City Input Section -->
+                        <div class="parameter-section city-section">
+                            <div class="section-header">
+                                <div class="section-icon city-icon">
+                                    <i class="fas fa-cloud-sun"></i>
+                                </div>
+                                <div>
+                                    <h3 class="section-title">Location</h3>
+                                    <p class="section-subtitle">Climate data will be fetched automatically</p>
+                                </div>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="city" class="input-label">
+                                    <i class="fas fa-city text-green-500 mr-2"></i>
+                                    City Name
+                                </label>
+                                <div class="input-wrapper">
+                                    <input type="text" name="city" id="city" 
+                                           class="form-input" placeholder="Enter your city" required>
+                                    <div class="input-hint">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        Weather data (Temperature, Humidity, Rainfall) will be automatically fetched
+                                    </div>
+                                </div>
+                                <!-- Hidden fields for backend -->
+                                <input type="hidden" name="temperature" id="temperature">
+                                <input type="hidden" name="humidity" id="humidity">
+                                <input type="hidden" name="rainfall" id="rainfall">
+                            </div>
+                        </div>
+
+                        <!-- Soil Parameters Section -->
+                        <div class="parameter-section soil-section">
+                            <div class="section-header">
+                                <div class="section-icon soil-icon">
+                                    <i class="fas fa-flask"></i>
+                                </div>
+                                <div>
+                                    <h3 class="section-title">Soil Parameters</h3>
+                                    <p class="section-subtitle">Essential nutrients and soil chemistry</p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="input-group">
+                                    <label for="nitrogen" class="input-label">
+                                        <i class="fas fa-leaf text-green-500 mr-2"></i>
+                                        Nitrogen (N)
+                                        <span class="input-unit">kg/ha</span>
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <input type="number" name="nitrogen" id="nitrogen" min="0" max="140" 
+                                               class="form-input" placeholder="Enter nitrogen level" required>
+                                        <div class="input-hint">Range: 0-140 kg/ha</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="phosphorous" class="input-label">
+                                        <i class="fas fa-atom text-orange-500 mr-2"></i>
+                                        Phosphorus (P)
+                                        <span class="input-unit">kg/ha</span>
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <input type="number" name="phosphorous" id="phosphorous" min="5" max="145" 
+                                               class="form-input" placeholder="Enter phosphorus level" required>
+                                        <div class="input-hint">Range: 5-145 kg/ha</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="potassium" class="input-label">
+                                        <i class="fas fa-vial text-purple-500 mr-2"></i>
+                                        Potassium (K)
+                                        <span class="input-unit">kg/ha</span>
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <input type="number" name="potassium" id="potassium" min="5" max="205" 
+                                               class="form-input" placeholder="Enter potassium level" required>
+                                        <div class="input-hint">Range: 5-205 kg/ha</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="ph" class="input-label">
+                                        <i class="fas fa-tint text-blue-500 mr-2"></i>
+                                        Soil pH
+                                        <span class="input-unit">pH scale</span>
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <input type="number" name="ph" id="ph" step="0.1" min="0" max="10" 
+                                               class="form-input" placeholder="Enter soil pH" required>
+                                        <div class="input-hint">Range: 0-10 pH scale</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="text-center mt-12">
+                            <button type="submit" class="submit-btn group">
+                                <div class="btn-content">
+                                    <i class="fas fa-search mr-3 transition-transform group-hover:scale-110"></i>
+                                    <span>Analyze & Get Recommendations</span>
+                                </div>
+                                <div class="btn-glow"></div>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="py-20 how-it-works-section">
+        <div class="how-it-works-content">
+            <div class="container mx-auto px-4">
+                <div class="text-center mb-16">
+                    <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-white to-gray-100 rounded-full mb-6 shadow-lg">
+                        <i class="fas fa-cogs text-2xl text-gray-800"></i>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4 section-header-white">
+                        How Our AI Recommendation Works
+                    </h2>
+                    <p class="text-xl max-w-2xl mx-auto section-description-white">
+                        Advanced machine learning algorithms analyze your data to provide optimal crop suggestions
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <div class="process-card" data-step="1">
+                        <div class="process-icon process-icon-1">
+                            <i class="fas fa-map-marker-alt text-2xl text-white"></i>
+                        </div>
+                        <div class="process-number">01</div>
+                        <h3 class="process-title">Enter Location</h3>
+                        <p class="process-description">
+                            Simply enter your city name and we'll automatically fetch current climate data
+                        </p>
+                        <div class="process-features">
+                            <div class="feature-item">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                Auto temperature data
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                Auto humidity data
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                Auto rainfall data
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="process-card" data-step="2">
+                        <div class="process-icon process-icon-2">
+                            <i class="fas fa-flask text-2xl text-white"></i>
+                        </div>
+                        <div class="process-number">02</div>
+                        <h3 class="process-title">Soil Analysis</h3>
+                        <p class="process-description">
+                            Provide your soil parameters for comprehensive analysis
+                        </p>
+                        <div class="process-features">
+                            <div class="feature-item">
+                                <i class="fas fa-check text-blue-500 mr-2"></i>
+                                N, P, K nutrients
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check text-blue-500 mr-2"></i>
+                                pH levels
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check text-blue-500 mr-2"></i>
+                                Soil chemistry
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="process-card" data-step="3">
+                        <div class="process-icon process-icon-3">
+                            <i class="fas fa-thumbs-up text-2xl text-white"></i>
+                        </div>
+                        <div class="process-number">03</div>
+                        <h3 class="process-title">Get Recommendations</h3>
+                        <p class="process-description">
+                            Receive personalized crop suggestions with detailed planting guides
+                        </p>
+                        <div class="process-features">
+                            <div class="feature-item">
+                                <i class="fas fa-check text-purple-500 mr-2"></i>
+                                Best crop matches
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check text-purple-500 mr-2"></i>
+                                Planting tips
+                            </div>
+                            <div class="feature-item">
+                                <i class="fas fa-check text-purple-500 mr-2"></i>
+                                Yield predictions
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="{{ url_for('static', filename='js/crop-recommendation.js') }}"></script>
+
+</body>
+</html>

@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriAI Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS Variables for Green Theme */
+        :root {
+            --primary-green: #10B981;
+            --dark-green: #047857;
+            --light-green: #D1FAE5;
+            --accent-green: #34D399;
+            --color-bg: #F9FAFB;
+            --color-text: #1F2937;
+            --color-card-bg: #FFFFFF;
+            --color-card-border: #E5E7EB;
+            --color-text-muted: #6B7280;
+            --glow-color: rgba(16, 185, 129, 0.3);
+        }
+
+        /* Basic Reset */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body { 
+            display: flex; 
+            min-height: 100vh; 
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        /* Desktop Sidebar */
+        .sidebar { 
+            width: 280px; 
+            background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 50%, var(--accent-green) 100%);
+            color: #fff; 
+            display: flex; 
+            flex-direction: column;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.08) 0%, transparent 45%);
+            pointer-events: none;
+        }
+
+        .sidebar-header { 
+            text-align: center; 
+            padding: 25px 20px; 
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .sidebar-header h2 {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar-header .user-name {
+            font-size: 1rem;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .sidebar-header i {
+            margin-right: 8px;
+            animation: leafFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes leafFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-3px) rotate(2deg); }
+        }
+
+        .sidebar a { 
+            padding: 18px 25px; 
+            color: rgba(255, 255, 255, 0.9); 
+            text-decoration: none; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+            border-left: 3px solid transparent;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .sidebar a:hover, .sidebar a.active { 
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            color: #fff;
+            border-left-color: #fff;
+            transform: translateX(3px);
+        }
+
+        .sidebar a i { 
+            width: 22px; 
+            text-align: center;
+            transition: transform 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .sidebar a:hover i {
+            transform: scale(1.1);
+        }
+
+        /* Top Header (Mobile) */
+        .top-header {
+            display: none;
+            background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 50%, var(--accent-green) 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-logo {
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .menu-toggle:active {
+            transform: scale(0.9);
+        }
+
+        /* Mobile Drawer */
+        .mobile-drawer {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 50%, var(--accent-green) 100%);
+            z-index: 1000;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-drawer.open {
+            transform: translateX(0);
+        }
+
+        .mobile-drawer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.08) 0%, transparent 45%);
+            pointer-events: none;
+        }
+
+        .drawer-header {
+            padding: 2rem 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+
+        .drawer-header h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .drawer-header p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .mobile-drawer a {
+            padding: 15px 1.5rem;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+            border-left: 3px solid transparent;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .mobile-drawer a:hover, .mobile-drawer a.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            border-left-color: #fff;
+            transform: translateX(3px);
+        }
+
+        .mobile-drawer a i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Drawer Overlay */
+        .drawer-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .drawer-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Main Content */
+        .main { 
+            flex: 1; 
+            padding: 0;
+            overflow-x: auto;
+            background: var(--color-bg);
+        }
+
+        /* Welcome Section */
+        .welcome-section {
+            background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 50%, var(--accent-green) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 15% 25%, rgba(255, 255, 255, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 75%, rgba(255, 255, 255, 0.12) 0%, transparent 35%);
+            animation: floatingLights 12s ease-in-out infinite;
+        }
+
+        @keyframes floatingLights {
+            0%, 100% {
+                background: 
+                    radial-gradient(circle at 15% 25%, rgba(255, 255, 255, 0.15) 0%, transparent 40%),
+                    radial-gradient(circle at 85% 75%, rgba(255, 255, 255, 0.12) 0%, transparent 35%);
+            }
+            50% {
+                background: 
+                    radial-gradient(circle at 75% 35%, rgba(255, 255, 255, 0.18) 0%, transparent 42%),
+                    radial-gradient(circle at 25% 65%, rgba(255, 255, 255, 0.15) 0%, transparent 38%);
+            }
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 2;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .welcome-content h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .welcome-content p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Content Section */
+        .content-section {
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Service Cards */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .service-card {
+            background: var(--color-card-bg);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--color-card-border);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-green), var(--accent-green));
+            border-radius: 20px 20px 0 0;
+        }
+
+        .service-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15);
+        }
+
+        .service-card .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-green);
+            transition: transform 0.3s ease;
+        }
+
+        .service-card:hover .card-icon {
+            transform: scale(1.1);
+        }
+
+        .service-card h4 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--color-text);
+        }
+
+        .service-card p {
+            color: var(--color-text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px var(--glow-color);
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--glow-color);
+            color: white;
+            text-decoration: none;
+        }
+
+        /* History Section */
+        .history-section {
+            background: var(--color-card-bg);
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            border: 1px solid var(--color-card-border);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .history-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-green), var(--accent-green));
+            border-radius: 20px 20px 0 0;
+        }
+
+        .history-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--color-card-border);
+            background: rgba(16, 185, 129, 0.02);
+            flex-wrap: wrap;
+        }
+
+        .history-tab {
+            flex: 1;
+            min-width: 120px;
+            padding: 1.2rem 1.5rem;
+            background: none;
+            border: none;
+            font-weight: 600;
+            color: var(--color-text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .history-tab.active {
+            color: var(--primary-green);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .history-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-green), var(--accent-green));
+        }
+
+        .badge-custom {
+            background: var(--accent-green);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            padding: 2rem;
+            min-height: 300px;
+        }
+
+        .history-item {
+            border-left: 4px solid var(--primary-green);
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1.5rem;
+            background: rgba(16, 185, 129, 0.03);
+            border-radius: 0 12px 12px 0;
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            background: rgba(16, 185, 129, 0.08);
+            transform: translateX(5px);
+        }
+
+        .empty-history {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--color-text-muted);
+        }
+
+        .empty-history i {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            color: var(--color-card-border);
+        }
+
+        .empty-history h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--color-text);
+        }
+
+        .crop-image, .disease-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-right: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+
+        .disease-image {
+            width: 80px;
+            height: 80px;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-card {
+            background: var(--color-card-bg);
+            border-radius: 16px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--color-card-border);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            color: var(--color-text-muted);
+            font-weight: 500;
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--color-bg);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-green);
+        }
+
+        /* Tab content visibility */
+        .tab-pane {
+            display: none;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media(max-width: 1024px) {
+            .content-section {
+                padding: 2rem 1.5rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media(max-width: 768px) { 
+            .sidebar {
+                display: none;
+            }
+
+            .top-header {
+                display: flex;
+            }
+
+            .mobile-drawer {
+                display: block;
+            }
+
+            .drawer-overlay {
+                display: none;
+            }
+
+            body {
+                flex-direction: column;
+            }
+            
+            .main {
+                flex: 1;
+                width: 100%;
+                padding-top: 65px;
+            }
+            
+            .welcome-section {
+                padding: 2rem 1.5rem;
+            }
+            
+            .welcome-content h1 {
+                font-size: 1.8rem;
+            }
+
+            .welcome-content p {
+                font-size: 1rem;
+            }
+            
+            .content-section {
+                padding: 1.5rem 1rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .service-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .service-card h4 {
+                font-size: 1.2rem;
+            }
+
+            .service-card p {
+                font-size: 0.95rem;
+            }
+            
+            .history-tab {
+                padding: 1rem 0.8rem;
+                font-size: 0.85rem;
+                min-width: 100px;
+            }
+
+            .badge-custom {
+                padding: 0.2rem 0.6rem;
+                font-size: 0.7rem;
+            }
+
+            .tab-content {
+                padding: 1.5rem 1rem;
+                min-height: 250px;
+            }
+
+            .history-item {
+                padding: 1rem 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .crop-image {
+                width: 50px;
+                height: 50px;
+                margin-right: 0.8rem;
+            }
+
+            .disease-image {
+                width: 70px;
+                height: 70px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .stat-card {
+                padding: 1.5rem 1rem;
+            }
+
+            .stat-card i {
+                font-size: 2rem;
+            }
+
+            .stat-card h3 {
+                font-size: 1.5rem;
+            }
+
+            .stat-card p {
+                font-size: 0.85rem;
+            }
+
+            .empty-history {
+                padding: 2rem 1rem;
+            }
+
+            .empty-history i {
+                font-size: 3rem;
+            }
+
+            .empty-history h4 {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media(max-width: 480px) {
+            .header-logo {
+                font-size: 1.1rem;
+            }
+
+            .welcome-section {
+                padding: 1.5rem 1rem;
+            }
+
+            .welcome-content h1 {
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .welcome-content p {
+                font-size: 0.9rem;
+            }
+
+            .content-section {
+                padding: 1rem;
+            }
+
+            .services-grid {
+                gap: 1rem;
+            }
+
+            .service-card {
+                padding: 1.5rem 1rem;
+                border-radius: 15px;
+            }
+
+            .service-card .card-icon {
+                font-size: 2.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .service-card h4 {
+                font-size: 1rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .service-card p {
+                font-size: 0.9rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .btn-primary-custom {
+                padding: 0.7rem 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .stat-card {
+                padding: 1.2rem 1rem;
+            }
+
+            .stat-card i {
+                font-size: 1.8rem;
+                margin-bottom: 0.8rem;
+            }
+
+            .stat-card h3 {
+                font-size: 1.3rem;
+            }
+
+            .stat-card p {
+                font-size: 0.8rem;
+            }
+
+            .history-tab {
+                padding: 0.8rem 0.6rem;
+                font-size: 0.75rem;
+                min-width: 80px;
+            }
+
+            .tab-content {
+                padding: 1rem;
+            }
+
+            .history-item {
+                padding: 0.8rem;
+            }
+
+            .crop-image {
+                width: 45px;
+                height: 45px;
+            }
+
+            .disease-image {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Header (Mobile Only) -->
+<div class="top-header">
+    <div class="header-left">
+        <button class="menu-toggle" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="header-logo">
+            <i class="fas fa-seedling"></i>
+            <span>AgriSmart</span>
+        </div>
+    </div>
+    <div style="color: white; font-weight: 600; font-size: 0.9rem;">
+        <i class="fas fa-leaf" style="margin-right: 0.5rem;"></i>Smart Farming
+    </div>
+</div>
+
+<!-- Drawer Overlay -->
+<div class="drawer-overlay" onclick="closeMobileMenu()"></div>
+
+<!-- Mobile Drawer -->
+<div class="mobile-drawer">
+    <div class="drawer-header">
+        <h3><i class="fas fa-seedling"></i> AgriSmart</h3>
+        <p>Welcome, {{ current_user.name }}!</p>
+    </div>
+    <a href="#" class="active" onclick="showSection('dashboard'); closeMobileMenu()"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="{{ url_for('crop_recommendation') }}" onclick="closeMobileMenu()"><i class="fas fa-seedling"></i> Crop Recommendation</a>
+    <a href="{{ url_for('disease_detection') }}" onclick="closeMobileMenu()"><i class="fas fa-leaf"></i> Disease Detection</a>
+    <a href="{{ url_for('chat') }}" onclick="closeMobileMenu()"><i class="fas fa-robot"></i> AI Chatbot</a>
+    <a href="#" onclick="showSection('history'); closeMobileMenu()"><i class="fas fa-history"></i> My History</a>
+    <a href="{{ url_for('logout') }}" onclick="closeMobileMenu()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</div>
+
+<!-- Desktop Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h2><i class="fas fa-seedling"></i> AgriSmart</h2>
+        <div class="user-name">Welcome, {{ current_user.name }}!</div>
+    </div>
+    <a href="#" class="active" onclick="showSection('dashboard')"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="{{ url_for('crop_recommendation') }}"><i class="fas fa-seedling"></i> Crop Recommendation</a>
+    <a href="{{ url_for('disease_detection') }}"><i class="fas fa-leaf"></i> Disease Detection</a>
+    <a href="{{ url_for('chat') }}"><i class="fas fa-robot"></i> AI Chatbot</a>
+    <a href="#" onclick="showSection('history')"><i class="fas fa-history"></i> My History</a>
+    <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <div class="welcome-content">
+            <h1>Welcome back, {{ current_user.name }}!</h1>
+            <p>Your Agricultural AI Assistant Dashboard - Smart farming solutions at your fingertips</p>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div id="dashboard-content" class="content-section">
+        <!-- Services Grid -->
+        <div class="services-grid">
+            <div class="service-card">
+                <i class="fas fa-seedling card-icon"></i>
+                <h4>Crop Recommendation</h4>
+                <p>Get AI-powered crop suggestions based on your soil and weather conditions for optimal yields.</p>
+                <a href="{{ url_for('crop_recommendation') }}" class="btn-primary-custom">
+                    <i class="fas fa-arrow-right"></i>
+                    Try Now
+                </a>
+            </div>
+            
+            <div class="service-card">
+                <i class="fas fa-leaf card-icon"></i>
+                <h4>Disease Detection</h4>
+                <p>Identify plant diseases from images and get instant treatment recommendations and solutions.</p>
+                <a href="{{ url_for('disease_detection') }}" class="btn-primary-custom">
+                    <i class="fas fa-camera"></i>
+                    Detect Disease
+                </a>
+            </div>
+            
+            <div class="service-card">
+                <i class="fas fa-robot card-icon"></i>
+                <h4>AI Chatbot</h4>
+                <p>Get answers to your agricultural questions in multiple languages from our intelligent assistant.</p>
+                <a href="{{ url_for('chat') }}" class="btn-primary-custom">
+                    <i class="fas fa-comments"></i>
+                    Start Chat
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <i class="fas fa-chart-line" style="color: var(--primary-green);"></i>
+                <h3>{{ crops|length }}</h3>
+                <p>Crop Recommendations</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-bug" style="color: #ef4444;"></i>
+                <h3>{{ diseases|length }}</h3>
+                <p>Disease Detections</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-comments" style="color: #3b82f6;"></i>
+                <h3>{{ chats|length }}</h3>
+                <p>Chat Interactions</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Section -->
+    <div id="history-content" class="content-section" style="display: none;">
+        <div class="history-section">
+            <div class="history-tabs">
+                <button class="history-tab active" onclick="switchTab(event, 'crops-tab')">
+                    <i class="fas fa-seedling"></i>
+                    Crops <span class="badge-custom">{{ crops|length }}</span>
+                </button>
+                <button class="history-tab" onclick="switchTab(event, 'diseases-tab')">
+                    <i class="fas fa-bug"></i>
+                    Diseases <span class="badge-custom">{{ diseases|length }}</span>
+                </button>
+                <button class="history-tab" onclick="switchTab(event, 'chats-tab')">
+                    <i class="fas fa-comments"></i>
+                    Chats <span class="badge-custom">{{ chats|length }}</span>
+                </button>
+            </div>
+            
+            <div class="tab-content">
+                <!-- Crops Tab -->
+                <div id="crops-tab" class="tab-pane active">
+                    {% if crops %}
+                        {% for crop in crops %}
+                        <div class="history-item">
+                            <div style="display: flex; align-items: center;">
+                                <img src="{{ url_for('static', filename='image/' + crop.recommended_crop.lower() + '.jpg') }}" 
+                                     alt="{{ crop.recommended_crop }}" class="crop-image"
+                                     onerror="this.src='https://via.placeholder.com/60x60/10B981/ffffff?text=🌱'">
+                                <div style="flex-grow: 1;">
+                                    <h5 style="margin-bottom: 0.5rem; font-weight: 600; color: var(--color-text);">{{ crop.recommended_crop }}</h5>
+                                    <p style="margin-bottom: 0.5rem; color: var(--color-text-muted);">Soil pH: {{ crop.soil_data.ph }} | N: {{ crop.soil_data.nutrients[0] }} | P: {{ crop.soil_data.nutrients[1] }} | K: {{ crop.soil_data.nutrients[2] }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-history">
+                            <i class="fas fa-seedling"></i>
+                            <h4>No Crop Recommendations Yet</h4>
+                            <p>Get your first crop recommendation by using our AI tool.</p>
+                            <a href="{{ url_for('crop_recommendation') }}" class="btn-primary-custom">Get Recommendation</a>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Diseases Tab -->
+                <div id="diseases-tab" class="tab-pane">
+                    {% if diseases %}
+                        {% for disease in diseases %}
+                        <div class="history-item">
+                            <div style="display: flex; align-items: flex-start;">
+                                <img src="{{ disease.disease_image_url }}" alt="{{ disease.disease_name }}" class="disease-image">
+                                <div style="flex-grow: 1;">
+                                    <h5 style="margin-bottom: 0.5rem; font-weight: 600; color: var(--color-text);">{{ disease.disease_name }}</h5>
+                                    {% if disease.disease_description %}
+                                    <p style="margin-bottom: 0.5rem; color: var(--color-text-muted);">{{ disease.disease_description[:150] }}...</p>
+                                    {% endif %}
+                                    {% if disease.supplement_name %}
+                                    <p style="margin-bottom: 0; color: var(--color-text);"><strong>Recommended:</strong> {{ disease.supplement_name }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-history">
+                            <i class="fas fa-leaf"></i>
+                            <h4>No Disease Detections Yet</h4>
+                            <p>Upload a plant image to detect potential diseases.</p>
+                            <a href="{{ url_for('disease_detection') }}" class="btn-primary-custom">Detect Disease</a>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Chats Tab -->
+                <div id="chats-tab" class="tab-pane">
+                    {% if chats %}
+                        {% for chat in chats %}
+                        <div class="history-item">
+                            <h5 style="margin-bottom: 0.8rem; font-weight: 600; color: var(--primary-green);">Your Question:</h5>
+                            <p style="margin-bottom: 1rem; color: var(--color-text);">{{ chat.question }}</p>
+                            <h5 style="margin-bottom: 0.8rem; font-weight: 600; color: var(--primary-green);">AI Response:</h5>
+                            <p style="margin-bottom: 0; color: var(--color-text-muted);">{{ chat.answer[:200] }}{% if chat.answer|length > 200 %}...{% endif %}</p>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-history">
+                            <i class="fas fa-robot"></i>
+                            <h4>No Chat History Yet</h4>
+                            <p>Start a conversation with our agricultural AI assistant.</p>
+                            <a href="{{ url_for('chat') }}" class="btn-primary-custom">Start Chat</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Mobile Menu Functions
+function toggleMobileMenu() {
+    const drawer = document.querySelector('.mobile-drawer');
+    const overlay = document.querySelector('.drawer-overlay');
+    drawer.classList.toggle('open');
+    overlay.classList.toggle('active');
+}
+
+function closeMobileMenu() {
+    const drawer = document.querySelector('.mobile-drawer');
+    const overlay = document.querySelector('.drawer-overlay');
+    drawer.classList.remove('open');
+    overlay.classList.remove('active');
+}
+
+// Navigation functions
+function showSection(section) {
+    const dashboardContent = document.getElementById('dashboard-content');
+    const historyContent = document.getElementById('history-content');
+    const sidebarLinks = document.querySelectorAll('.sidebar a, .mobile-drawer a');
+    
+    // Remove active class from all sidebar links
+    sidebarLinks.forEach(link => link.classList.remove('active'));
+    
+    if (section === 'dashboard') {
+        dashboardContent.style.display = 'block';
+        historyContent.style.display = 'none';
+        event.target.classList.add('active');
+    } else if (section === 'history') {
+        dashboardContent.style.display = 'none';
+        historyContent.style.display = 'block';
+        event.target.classList.add('active');
+    }
+}
+
+// Tab switching function
+function switchTab(event, tabId) {
+    // Remove active class from all tabs and tab panes
+    const tabs = document.querySelectorAll('.history-tab');
+    const panes = document.querySelectorAll('.tab-pane');
+    
+    tabs.forEach(tab => tab.classList.remove('active'));
+    panes.forEach(pane => pane.classList.remove('active'));
+    
+    // Add active class to clicked tab and corresponding pane
+    event.target.closest('.history-tab').classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+}
+
+// Animation on load
+document.addEventListener('DOMContentLoaded', function() {
+    const serviceCards = document.querySelectorAll('.service-card');
+    serviceCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 200);
+    });
+    
+    const statCards = document.querySelectorAll('.stat-card');
+    statCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 800 + index * 100);
+    });
+    
+    // Animate history items
+    const historyItems = document.querySelectorAll('.history-item');
+    historyItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(-20px)';
+        item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        
+        setTimeout(() => {
+            item.style.opacity = '1';
+            item.style.transform = 'translateX(0)';
+        }, index * 100);
+    });
+});
+</script>
+</body>
+</html>

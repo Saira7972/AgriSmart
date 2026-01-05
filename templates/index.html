@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSmart - AI-Powered Farming Assistant</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="font-sans antialiased text-gray-900">
+    <!-- Header -->
+    <nav class="shadow-lg sticky top-0 z-50" id="main-nav">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between">
+                <div class="flex space-x-4">
+                    <div class="flex items-center py-4">
+                        <a href="/index" class="flex items-center space-x-2">
+                            <i class="fas fa-seedling text-2xl text-green-600"></i>
+                            <span class="font-bold text-xl tracking-tight">AgriSmart</span>
+                        </a>
+                    </div>
+                    <div class="hidden md:flex items-center space-x-1">
+                        <a href="{{ url_for('index') }}" class="nav-item py-4 px-3 transition duration-300">
+                            <i class="fas fa-home mr-1"></i> Home
+                        </a>
+                        <a href="{{ url_for('index', _anchor='about') }}" class="nav-item py-4 px-3 transition duration-300">
+                            <i class="fas fa-info-circle mr-1"></i> About Us
+                        </a>
+                        <a href="{{ url_for('index', _anchor='services') }}" class="nav-item py-4 px-3 transition duration-300">
+                            <i class="fas fa-tools mr-1"></i> Services
+                        </a>
+                        <a href="{{ url_for('index', _anchor='features') }}" class="nav-item py-4 px-3 transition duration-300">
+                            <i class="fas fa-star mr-1"></i> Features
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="hidden md:flex items-center">
+                        <a href="{{ url_for('login') }}" class="bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition duration-300">
+                          Get Started
+                        </a>
+                    </div>
+                    
+                    <div class="md:hidden flex items-center">
+                        <button class="mobile-menu-button focus:outline-none p-2 rounded-full transition-colors duration-300 hover:bg-opacity-10 hover:bg-current" aria-label="Toggle mobile menu">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="mobile-menu hidden md:hidden transition-all duration-300">
+            <a href="#" class="block py-3 px-4 text-sm transition duration-300 hover:bg-opacity-5 hover:bg-current">
+                <i class="fas fa-home mr-2"></i> Home
+            </a>
+            <a href="{{ url_for('index', _anchor='about') }}" class="block py-3 px-4 text-sm transition duration-300 hover:bg-opacity-5 hover:bg-current">
+                <i class="fas fa-info-circle mr-2"></i> About Us
+            </a>
+            <a href="{{ url_for('index', _anchor='services') }}" class="block py-3 px-4 text-sm transition duration-300 hover:bg-opacity-5 hover:bg-current">
+                <i class="fas fa-tools mr-2"></i> Services
+            </a>
+            <a href="{{ url_for('index', _anchor='features') }}" class="block py-3 px-4 text-sm transition duration-300 hover:bg-opacity-5 hover:bg-current">
+                <i class="fas fa-star mr-2"></i> Features
+            </a>
+            <!-- Get Started Button (Mobile) -->
+            <a href="{{ url_for('login') }}" class="block py-3 px-4 text-sm bg-green-600 text-white rounded-lg mt-2 text-center hover:bg-green-700 transition duration-300">
+              Get Started
+            </a>
+        </div>
+    </nav>
+
+    <!-- Hero Section with Slider - YOUR ORIGINAL THEME -->
+    <section class="hero-slider">
+        <div class="hero-pattern"></div>
+        
+        <!-- Slide 1 -->
+        <div class="slide active">
+            <div class="grid grid-cols-1 lg:grid-cols-2 h-full w-full">
+                <div class="slide-content flex items-center justify-center px-8 lg:px-16">
+                    <div>
+                        <span class="hero-badge">
+                            <i class="fas fa-robot mr-2"></i>AI-Powered Agriculture
+                        </span>
+                        <h1 class="hero-title">Transform Your Farming with Intelligent Solutions</h1>
+                        <p class="hero-description">Revolutionize your farming with AI-powered insights and recommendations tailored to your specific needs and conditions.</p>
+                        <div class="hero-buttons">
+                            <a href="{{ url_for('login') }}" class="btn-primary">
+                                <i class="fas fa-rocket mr-2"></i>Get Started
+                            </a>
+                            <a href="#about" class="btn-secondary">
+                                <i class="fas fa-book-open mr-2"></i>Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-image">
+                    <img src="{{ url_for('static', filename='images/slide.jpeg') }}" alt="Smart Farming" onerror="this.style.display='none';">
+                    <div class="image-placeholder">
+                        <div class="image-content">
+                            <i class="fas fa-tractor"></i>
+                            <div style="font-size: 1rem; margin-top: 0.5rem;">Smart Farming</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide">
+            <div class="grid grid-cols-1 lg:grid-cols-2 h-full w-full">
+                <div class="slide-content flex items-center justify-center px-8 lg:px-16">
+                    <div>
+                        <span class="hero-badge" style="background: rgba(59, 130, 246, 0.15);">
+                            <i class="fas fa-seedling mr-2"></i>Crop Intelligence
+                        </span>
+                        <h1 class="hero-title">Smarter Crop Recommendations</h1>
+                        <p class="hero-description">Get AI-driven crop suggestions based on soil health, weather, and local conditions for maximum yield and profitability.</p>
+                        <div class="hero-buttons">
+                            <a href="{{ url_for('login') }}" class="btn-primary" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                                <i class="fas fa-lightbulb mr-2"></i>Get Started
+                            </a>
+                            <a href="#about" class="btn-secondary">
+                                <i class="fas fa-book-open mr-2"></i>Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-image">
+                    <img src="{{ url_for('static', filename='images/slide6.jpg') }}" alt="Crop Intelligence" onerror="this.style.display='none';">
+                    <div class="image-placeholder">
+                        <div class="image-content">
+                            <i class="fas fa-brain"></i>
+                            <div style="font-size: 1rem; margin-top: 0.5rem;">Crop Intelligence</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide">
+            <div class="grid grid-cols-1 lg:grid-cols-2 h-full w-full">
+                <div class="slide-content flex items-center justify-center px-8 lg:px-16">
+                    <div>
+                        <span class="hero-badge">
+                            <i class="fas fa-microscope mr-2"></i>Disease Detection
+                        </span>
+                        <h1 class="hero-title">Detect Plant Diseases Instantly</h1>
+                        <p class="hero-description">Capture a leaf photo and let our AI identify plant diseases with recommended treatments to protect your crops.</p>
+                        <div class="hero-buttons">
+                            <a href="{{ url_for('login') }}" class="btn-primary">
+                                <i class="fas fa-camera mr-2"></i>Get Started
+                            </a>
+                            <a href="#about" class="btn-secondary">
+                                <i class="fas fa-book-open mr-2"></i>Learn More
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-image">
+                    <img src="{{ url_for('static', filename='images/plant.jpg') }}" alt="Disease Detection" onerror="this.style.display='none';">
+                    <div class="image-placeholder">
+                        <div class="image-content">
+                            <i class="fas fa-search-plus"></i>
+                            <div style="font-size: 1rem; margin-top: 0.5rem;">Disease Detection</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slider Navigation -->
+        <div class="slider-nav">
+            <div class="slider-dot active" data-slide="0"></div>
+            <div class="slider-dot" data-slide="1"></div>
+            <div class="slider-dot" data-slide="2"></div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-16 stats-section relative">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="stat-card">
+                    <div class="stat-number">24/7</div>
+                    <p class="text-gray-600 font-medium">AI Support</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">95%</div>
+                    <p class="text-gray-600 font-medium">Accuracy Rate</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">10+</div>
+                    <p class="text-gray-600 font-medium">Farmers Supported</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">30%</div>
+                    <p class="text-gray-600 font-medium">Increase in Yield</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced About Section -->
+    <section id="about" class="py-24 about-modern section-modern">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="section-header-modern">
+                <span class="section-badge">About Us</span>
+                <h2 class="section-title-modern">Our Mission</h2>
+                <p class="section-description-modern">Empowering farmers with cutting-edge technology to improve productivity and sustainability</p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="about-image-container">
+                    <div class="about-image-wrapper">
+                        <img src="{{ url_for('static', filename='images/About.jpg') }}" alt="Farming with technology" class="w-full object-cover rounded-lg">
+                    </div>
+                </div>
+                <div class="about-content">
+                    <h3 class="about-title">Empowering Farmers with Technology</h3>
+                    <p class="about-text">
+                        AgriSmart is an AI-powered farming assistant designed to help farmers make better decisions. 
+                        Our mission is to make farming more efficient and sustainable using cutting-edge technology.
+                    </p>
+                    <p class="about-text">
+                        We combine artificial intelligence with agricultural expertise to provide actionable insights
+                        that increase crop yields, reduce losses from disease, and optimize resource usage.
+                    </p>
+                    <ul class="about-features">
+                        <li class="about-feature-item">
+                            <div class="about-feature-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <p class="about-feature-text">Founded by agricultural experts and AI specialists</p>
+                        </li>
+                        <li class="about-feature-item">
+                            <div class="about-feature-icon">
+                                <i class="fas fa-leaf"></i>
+                            </div>
+                            <p class="about-feature-text">Dedicated to sustainable and responsible farming practices</p>
+                        </li>
+                        <li class="about-feature-item">
+                            <div class="about-feature-icon">
+                                <i class="fas fa-handshake"></i>
+                            </div>
+                            <p class="about-feature-text">Committed to bridging traditional farming with modern technology</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-24 services-modern section-modern">
+        <div class="container mx-auto px-4">
+            <div class="section-header-modern">
+                <span class="section-badge">What We Offer</span>
+                <h2 class="section-title-modern">Our Services</h2>
+                <p class="section-description-modern">Comprehensive AI solutions designed specifically for modern farming challenges</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <!-- Smart Chatbot -->
+                <div class="service-card-modern">
+                    <div class="service-image">
+                        <img src="{{ url_for('static', filename='images/chatbot.jpg') }}" alt="AI Chatbot">
+                        <div class="service-badge">24/7 Support</div>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3 class="service-title">Smart Farming Chatbot</h3>
+                        <p class="service-description">
+                            Our AI-powered chatbot provides instant answers to your farming questions, 
+                            offering guidance on best practices, troubleshooting issues, and providing timely advice.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Crop Recommendation System -->
+                <div class="service-card-modern">
+                    <div class="service-image">
+                        <img src="{{ url_for('static', filename='images/crop recommendation.jpg') }}" alt="Crop Recommendation">
+                        <div class="service-badge">AI Analysis</div>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-icon">
+                            <i class="fas fa-seedling"></i>
+                        </div>
+                        <h3 class="service-title">Crop Recommendation</h3>
+                        <p class="service-description">
+                            Our system analyzes soil conditions, climate data, and regional factors to suggest 
+                            optimal crops for your specific location, maximizing yield potential.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Disease Detection -->
+                <div class="service-card-modern">
+                    <div class="service-image">
+                        <img src="{{ url_for('static', filename='images/plant disease.jpg') }}" alt="Disease Detection">
+                        <div class="service-badge">Computer Vision</div>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-icon">
+                            <i class="fas fa-microscope"></i>
+                        </div>
+                        <h3 class="service-title">Plant Disease Detection</h3>
+                        <p class="service-description">
+                            Upload images of your plants and our AI will identify diseases, pests, and nutrient deficiencies,
+                            providing treatment recommendations to protect your crops.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Features Section -->
+    <section id="features" class="py-24 features-modern section-modern">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="section-header-modern">
+                <span class="section-badge">Our Advantages</span>
+                <h2 class="section-title-modern">Why Choose AgriSmart</h2>
+                <p class="section-description-modern">Discover the benefits that set our farming solutions apart</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h3 class="feature-title-modern">Real-time Analysis</h3>
+                    <p class="feature-description-modern">Get instant insights and recommendations based on your specific farming conditions</p>
+                </div>
+                
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 class="feature-title-modern">High Accuracy</h3>
+                    <p class="feature-description-modern">Our AI models are trained on extensive agricultural datasets for reliable results</p>
+                </div>
+                
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern">
+                        <i class="fas fa-sliders-h"></i>
+                    </div>
+                    <h3 class="feature-title-modern">Customizable</h3>
+                    <p class="feature-description-modern">Tailor our solutions to your specific crops, soil types, and regional conditions</p>
+                </div>
+                
+                <div class="feature-card-modern">
+                    <div class="feature-icon-modern">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="feature-title-modern">Mobile Friendly</h3>
+                    <p class="feature-description-modern">Access our platform from anywhere in the field using your smartphone or tablet</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced How It Works Section -->
+    <section class="py-24 how-it-works-modern">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="section-header-modern">
+                <span class="section-badge" style="background: rgba(255, 255, 255, 0.2); color: var(--dark-green); border: 1px solid rgba(255, 255, 255, 0.3);">Process</span>
+                <h2 class="section-title-modern" style="color: var(--dark-green);">How It Works</h2>
+                <p class="section-description-modern" style="color: var(--color-text-muted);">Simple steps to transform your farming with AgriSmart technology</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                <div class="process-card-modern">
+                    <div class="process-icon-modern process-icon-1">
+                        <i class="fas fa-user-plus text-3xl text-white"></i>
+                    </div>
+                    <div class="process-number-modern">01</div>
+                    <h3 class="process-title-modern">Create Account</h3>
+                    <p class="process-description-modern">Sign up and create your farm profile with details about your location and farming goals</p>
+                </div>
+                
+                <div class="process-card-modern">
+                    <div class="process-icon-modern process-icon-2">
+                        <i class="fas fa-cloud-upload-alt text-3xl text-white"></i>
+                    </div>
+                    <div class="process-number-modern">02</div>
+                    <h3 class="process-title-modern">Input Data</h3>
+                    <p class="process-description-modern">Enter soil information, upload plant images, or start a conversation with our AI assistant</p>
+                </div>
+                
+                <div class="process-card-modern">
+                    <div class="process-icon-modern process-icon-3">
+                        <i class="fas fa-magic text-3xl text-white"></i>
+                    </div>
+                    <div class="process-number-modern">03</div>
+                    <h3 class="process-title-modern">Get Results</h3>
+                    <p class="process-description-modern">Receive personalized recommendations, insights, and actionable advice for your farm</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="py-24 faq-modern">
+        <div class="container mx-auto px-4">
+            <div class="section-header-modern">
+                <span class="section-badge">Common Questions</span>
+                <h2 class="section-title-modern">Frequently Asked Questions</h2>
+                <p class="section-description-modern">Find answers to common questions about our AI-powered farming solutions</p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="faq-item-modern">
+                    <button class="faq-button-modern">
+                        <div class="faq-question-modern">
+                            <span>How accurate is the crop recommendation system?</span>
+                            <i class="fas fa-chevron-down faq-icon-modern"></i>
+                        </div>
+                    </button>
+                    <div class="faq-answer-modern">
+                        <p>Our crop recommendation system has been tested across different regions and has an average accuracy rate of 95%. The system analyzes multiple factors including soil type, pH levels, regional climate data, rainfall patterns, and historical crop performance to make highly tailored suggestions.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item-modern">
+                    <button class="faq-button-modern">
+                        <div class="faq-question-modern">
+                            <span>What kind of plant diseases can your system detect?</span>
+                            <i class="fas fa-chevron-down faq-icon-modern"></i>
+                        </div>
+                    </button>
+                    <div class="faq-answer-modern">
+                        <p>Our disease detection system can identify over 50 different diseases across 20+ crop varieties, including common issues like late blight in potatoes, powdery mildew in cucurbits, rust in wheat, and bacterial spot in tomatoes. The system is regularly updated with new disease patterns and treatment options.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item-modern">
+                    <button class="faq-button-modern">
+                        <div class="faq-question-modern">
+                            <span>Do I need special equipment to use AgriSmart?</span>
+                            <i class="fas fa-chevron-down faq-icon-modern"></i>
+                        </div>
+                    </button>
+                    <div class="faq-answer-modern">
+                        <p>No special equipment is required! You only need a smartphone, tablet, or computer with internet access. For the disease detection feature, you'll need a camera to take clear photos of your plants. For more advanced users, we do offer integration with soil sensors and weather stations for even more precise recommendations.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item-modern">
+                    <button class="faq-button-modern">
+                        <div class="faq-question-modern">
+                            <span>Is my farming data secure and private?</span>
+                            <i class="fas fa-chevron-down faq-icon-modern"></i>
+                        </div>
+                    </button>
+                    <div class="faq-answer-modern">
+                        <p>Absolutely. We take data privacy very seriously. All your farming data is encrypted and securely stored. We never share your personal information or farming data with third parties without your explicit consent. You maintain full ownership of your data at all times.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item-modern">
+                    <button class="faq-button-modern">
+                        <div class="faq-question-modern">
+                            <span>Can I use AgriSmart if I'm a small-scale farmer?</span>
+                            <i class="fas fa-chevron-down faq-icon-modern"></i>
+                        </div>
+                    </button>
+                    <div class="faq-answer-modern">
+                        <p>Yes! AgriSmart is designed for farmers of all sizes. We offer various subscription plans, including affordable options specifically for small-scale and family farmers. Our goal is to make advanced agricultural technology accessible to everyone, regardless of farm size.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="themed-footer py-10">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4 footer-title">AgriSmart</h3>
+                    <p class="footer-text mb-4">Empowering farmers with cutting-edge AI technology for smarter agriculture.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="footer-link transition duration-300"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="footer-link transition duration-300"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="footer-link transition duration-300"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="footer-link transition duration-300"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 footer-title">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="footer-link transition duration-300">Home</a></li>
+                        <li><a href="{{ url_for('index', _anchor='about') }}" class="footer-link transition duration-300">About Us</a></li>
+                        <li><a href="{{ url_for('index', _anchor='services') }}" class="footer-link transition duration-300">Services</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 footer-title">AgriSmart AI</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{{ url_for('login') }}" class="footer-link transition duration-300">Crop Recommendation</a></li>
+                        <li><a href="{{ url_for('login') }}" class="footer-link transition duration-300">Plant Disease Detection</a></li>
+                        <li><a href="{{ url_for('login') }}" class="footer-link transition duration-300">Farm Management</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold mb-4 footer-title">Contact Us</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center footer-contact">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span>Sindh University, Jamshoro</span>
+                        </li>
+                        <li class="flex items-center footer-contact">
+                            <i class="fas fa-phone mr-2"></i>
+                            <span>+92 3113743779</span>
+                        </li>
+                        <li class="flex items-center footer-contact">
+                            <i class="fas fa-envelope mr-2"></i>
+                            <span>info@agrismart.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-border mt-8 pt-6 text-center footer-copyright text-sm">
+                <p>&copy; 2025 AgriSmart. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
