@@ -27,7 +27,6 @@ import pandas as pd
 import numpy as np
 import joblib
 import xgboost as xgb
-from ultralytics import YOLO
 try:
     import cv2
 except ImportError:
@@ -38,6 +37,10 @@ from deep_translator import GoogleTranslator
 import google.generativeai as genai
 from dotenv import load_dotenv
 from supabase import create_client
+
+YOLO = None
+disease_model = None
+class_names = None
 
 
 # ---------------- ENV SETUP ----------------
@@ -144,14 +147,26 @@ def load_user(user_id):
 
 # ---------------- ML MODELS ----------------
 # Disease Detection
-MODEL_PATH = "Plant_disease_detection/best.pt" 
-try:
-    disease_model = YOLO(MODEL_PATH)
-    print(f"✅ YOLO Model loaded from {MODEL_PATH}")
-    class_names = disease_model.names
-except Exception as e:
-    print(f"❌ Error loading YOLO model: {e}")
-    disease_model = None
+def load_yolo_model():
+    global YOLO, disease_model, class_names
+
+    if disease_model is not None:
+        return
+
+    try:
+        from ultralytics import YOLO as YOLO_LOCAL
+        YOLO = YOLO_LOCAL
+
+        MODEL_PATH = "Plant_disease_detection/best.pt"
+        disease_model = YOLO(MODEL_PATH)
+        class_names = disease_model.names
+
+        print("✅ YOLO model loaded lazily")
+
+    except Exception as e:
+        print("❌ YOLO load failed:", e)
+        disease_model = None
+
 
 # Disease & Supplement info
 disease_info = pd.read_csv('plant_disease_detection/utils/disease_info.csv', encoding='cp1252')
@@ -185,15 +200,12 @@ def contains_leaf(image_path, green_threshold=0.10): # Lowered threshold slightl
 import logging
 
 def predict_image(image_path):
-    """
-    Runs YOLO prediction on the image.
-    Annotates the image with bounding boxes (green).
-    Returns the class with the highest confidence.
-    """
     try:
-        # 1. Run YOLO inference
+        load_yolo_model()   # 👈 VERY IMPORTANT
+
         if disease_model is None:
-            raise ValueError("Model not loaded")
+            raise ValueError("YOLO not available")
+
 
         results = disease_model(image_path)[0]
 
