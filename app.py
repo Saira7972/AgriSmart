@@ -27,8 +27,11 @@ import pandas as pd
 import numpy as np
 import joblib
 import xgboost as xgb
-import cv2
 from ultralytics import YOLO
+try:
+    import cv2
+except ImportError:
+    cv2 = None
 
 from PIL import Image
 from deep_translator import GoogleTranslator
@@ -200,9 +203,10 @@ def predict_image(image_path):
         detections_found = False
 
         # Load image for annotation with OpenCV
-        image = cv2.imread(image_path)
-        if image is None:
-             raise ValueError("Could not read image with OpenCV")
+        image = None
+        if cv2 is not None:
+          image = cv2.imread(image_path)
+
 
         for box in results.boxes:
             detections_found = True
@@ -218,11 +222,13 @@ def predict_image(image_path):
             # Draw Box (Green) - No Text as requested
             x1, y1, x2, y2 = map(int, box.xyxy[0])
             color = (0, 255, 0) 
-            cv2.rectangle(image, (x1, y1), (x2, y2), color, 2)
+            if cv2 is not None and image is not None:
+             cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
+
 
         # 3. Save Annotated Image (Overwrite original to show boxes in frontend)
-        cv2.imwrite(image_path, image)
-
+        if cv2 is not None and image is not None:
+            cv2.imwrite(image_path, image)
         # 4. Handle "No Detection" case
         if not detections_found:
             # If YOLO finds nothing, we assume it's Healthy or Unknown
