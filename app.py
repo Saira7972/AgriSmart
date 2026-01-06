@@ -205,7 +205,8 @@ def predict_image(image_path):
         # Load image for annotation with OpenCV
         image = None
         if cv2 is not None:
-          image = cv2.imread(image_path)
+           image = cv2.imread(image_path)
+
 
 
         for box in results.boxes:
