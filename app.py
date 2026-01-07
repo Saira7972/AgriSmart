@@ -667,7 +667,8 @@ def crop_recommendation():
             ]
 
             # 2️⃣ Fetch weather data (3 months average)
-            VC_API_KEY = "LYVZADWDBCY56GLU8R2LCL848" 
+            VC_API_KEY = os.getenv("VC_API_KEY")
+
             avg_temp, avg_humidity, total_rainfall = get_weather_data(city, VC_API_KEY)
 
             # 3️⃣ Prepare model features
@@ -829,6 +830,3 @@ def chat():
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-# -------------------------- Run App --------------------------
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
