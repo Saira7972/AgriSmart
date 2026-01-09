@@ -19,3 +19,6 @@ static/uploads/
 
 # OS files
 .DS_Store
+
+chatbot/
+
