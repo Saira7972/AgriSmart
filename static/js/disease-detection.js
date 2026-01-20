@@ -23,29 +23,6 @@ document.addEventListener('DOMContentLoaded', function () {
     let stream = null;
     let currentMode = 'upload';
 
-    /* ================= CAMERA SUPPORT DETECTION ================= */
-    function checkCameraSupport() {
-        // Check if browser supports media devices
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            console.log('navigator.mediaDevices not available');
-            return false;
-        }
-        
-        // Check for mobile devices (they definitely have cameras)
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        if (isMobile) {
-            return true; // Mobile devices always have camera
-        }
-        
-        // Check for legacy browser support
-        const hasGetUserMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-        const hasWebkitGetUserMedia = !!(navigator.webkitGetUserMedia);
-        const hasMozGetUserMedia = !!(navigator.mozGetUserMedia);
-        const hasMsGetUserMedia = !!(navigator.msGetUserMedia);
-        
-        return hasGetUserMedia || hasWebkitGetUserMedia || hasMozGetUserMedia || hasMsGetUserMedia;
-    }
-
     /* ================= MODE SWITCHING ================= */
     uploadModeBtn.addEventListener('click', () => switchMode('upload'));
     cameraModeBtn.addEventListener('click', () => switchMode('camera'));
@@ -74,62 +51,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /* ================= CAMERA FUNCTIONS ================= */
     async function startCamera() {
-        // First check if we're on mobile
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        
-        if (!checkCameraSupport()) {
-            let errorMessage = 'Camera not available. ';
-            if (isMobile) {
-                errorMessage += 'Please check browser permissions or try Chrome/Safari.';
-            } else {
-                errorMessage += 'Your browser may not support camera access.';
-            }
-            alert(errorMessage);
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            alert('Camera not supported on this device. Please use upload mode.');
             switchMode('upload');
             return;
         }
 
         try {
             cameraBox.classList.remove('hidden');
-            
-            // Mobile devices ke liye different constraints
-            const constraints = {
+            stream = await navigator.mediaDevices.getUserMedia({
                 video: {
-                    facingMode: { ideal: "environment" }, // Rear camera
+                    facingMode: { ideal: "environment" },
                     width: { ideal: 1280 },
                     height: { ideal: 720 }
                 },
                 audio: false
-            };
-
-            // iOS ke liye additional permissions check
-            if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
-                // iOS needs specific handling
-                constraints.video.facingMode = { exact: "environment" };
-            }
-
-            stream = await navigator.mediaDevices.getUserMedia(constraints);
+            });
             video.srcObject = stream;
-            video.play();
-            
-            console.log('Camera started successfully');
         } catch (err) {
             console.error('Camera error:', err);
-            
-            // User-friendly error messages
-            let userMessage = 'Unable to access camera. ';
-            
-            if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-                userMessage += 'Please allow camera permissions in your browser settings.';
-            } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-                userMessage += 'No camera found on this device.';
-            } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
-                userMessage += 'Camera is being used by another application.';
-            } else {
-                userMessage += 'Please try again or use upload mode.';
-            }
-            
-            alert(userMessage);
+            alert('Unable to access camera. Please check permissions.');
             switchMode('upload');
         }
     }
@@ -146,17 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Draw video frame to canvas
         const context = canvas.getContext('2d');
-        
-        // Flip image for front camera
-        if (video.style.transform === 'scaleX(-1)') {
-            context.translate(canvas.width, 0);
-            context.scale(-1, 1);
-        }
-        
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        // Reset transform
-        context.setTransform(1, 0, 0, 1, 0, 0);
         
         // Convert canvas to blob
         canvas.toBlob(blob => {
@@ -272,22 +203,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     /* ================= INITIALIZE ================= */
-    // Initialize camera button
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    if (!checkCameraSupport()) {
+    // Check camera support on load
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         cameraModeBtn.disabled = true;
-        if (isMobile) {
-            cameraModeBtn.innerHTML = '<i class="fas fa-camera mr-2"></i>Check Permissions';
-            cameraModeBtn.title = 'Camera blocked. Allow in browser settings.';
-        } else {
-            cameraModeBtn.innerHTML = '<i class="fas fa-camera-slash mr-2"></i>No Camera';
-            cameraModeBtn.title = 'Camera not supported on this browser';
-        }
-    } else if (isMobile) {
-        // Mobile device with camera support
-        cameraModeBtn.innerHTML = '<i class="fas fa-mobile-alt mr-2"></i>Use Camera';
-        cameraModeBtn.title = 'Use your phone camera';
+        cameraModeBtn.innerHTML = '<i class="fas fa-camera-slash mr-2"></i>Camera Not Supported';
+        cameraModeBtn.title = 'Camera not supported on this device';
     }
 
     // Clean up camera on page unload
