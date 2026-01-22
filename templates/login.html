@@ -303,6 +303,16 @@
         background: linear-gradient(135deg, var(--light-green) 0%, #A7F3D0 100%); 
         border-left-color: var(--primary-green); 
     }
+    .flash {
+    animation: fadeOut 4s forwards;
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; display: none; }
+}
+
 
     /* ---------------------- IMAGE SECTION ---------------------- */
     .image-section { 

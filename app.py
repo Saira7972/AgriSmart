@@ -20,7 +20,7 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 
-from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, jsonify, session
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 import pandas as pd
@@ -171,8 +171,8 @@ def load_yolo_model():
 
 
 # Disease & Supplement info
-disease_info = pd.read_csv('plant_disease_detection/utils/disease_info.csv', encoding='cp1252')
-supplement_info = pd.read_csv('plant_disease_detection/utils/supplement_info.csv', encoding='cp1252')
+disease_info = pd.read_csv('Plant_disease_detection/utils/disease_info.csv', encoding='cp1252')
+supplement_info = pd.read_csv('Plant_disease_detection/utils/supplement_info.csv', encoding='cp1252')
 
 # Crop Recommendation
 crop_model = xgb.Booster()
@@ -277,77 +277,71 @@ def index():
     return render_template('index.html')
 
 # --------- AUTH ---------
-@app.route('/register', methods=['GET','POST'])
+@app.route('/register', methods=['POST'])
 def register():
-    if request.method=='POST':
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form['password']
-        terms = request.form.get('terms')
+    name = request.form['name']
+    email = request.form['email']
+    password = request.form['password']
+    terms = request.form.get('terms')
 
-        if not terms:
-            flash("You must agree to terms & policy.", "error")
-            return redirect(url_for("index"))
+    if not terms:
+        flash("You must agree to terms & policy.", "error")
+        return redirect(url_for("index"))
 
-        # Check if user already exists
-        resp = supabase.table("users").select("*").eq("email", email).execute()
-        existing = getattr(resp,"data",[]) or []
-        if existing:
-            flash("Email already registered. Please login.", "error")
-            return redirect(url_for("index"))
+    resp = supabase.table("users").select("*").eq("email", email).execute()
+    if resp.data:
+        flash("Email already registered. Please login.", "error")
+        return redirect(url_for("index"))
 
-        # Create user
-        hashed = generate_password_hash(password, method='pbkdf2:sha256')
+    hashed = generate_password_hash(password)
 
-        resp = supabase.table("users").insert({
-            "name": name, "email": email, "password": hashed, "role": "farmer"
-        }).execute()
+    resp = supabase.table("users").insert({
+        "name": name,
+        "email": email,
+        "password": hashed,
+        "role": "farmer"
+    }).execute()
 
-        data = getattr(resp,"data",None)
-        if data:
-            user = User(data[0]['id'], name, email, hashed)
-            login_user(user)
-            flash("Account created successfully!", "success")
-            return redirect(url_for('login'))
+    if resp.data:
+        user = User(resp.data[0]['id'], name, email, hashed, "farmer")
+        login_user(user)
+        flash("Account created successfully!", "success")
+        return redirect(url_for('dashboard'))
 
-        flash("Registration failed", "error")
-        return redirect(url_for('index'))
-
-    return render_template('register.html')
+    flash("Registration failed", "error")
+    return redirect(url_for("index"))
 
 
 # --------- LOGIN ---------
-
 @app.route('/login', methods=['GET','POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+
     if request.method=='POST':
         email = request.form['email']
         password = request.form['password']
 
         resp = supabase.table("users").select("*").eq("email", email).execute()
-        data = getattr(resp,"data",[]) or []
+        data = resp.data or []
 
         if data and check_password_hash(data[0]['password'], password):
-
             user = User(
-                id=data[0]['id'],
-                name=data[0]['name'],
-                email=email,
-                password=data[0]['password'],
-                role=data[0].get('role','farmer')
+                data[0]['id'],
+                data[0]['name'],
+                email,
+                data[0]['password'],
+                data[0].get('role','farmer')
             )
             login_user(user)
             flash("Logged in successfully!", "success")
 
-            # 👉 Role based redirect
-            if user.role == "admin":
-                return redirect(url_for('admin_dashboard'))
-            else:
-                return redirect(url_for('dashboard'))
+            return redirect(url_for(
+                'admin_dashboard' if user.role == 'admin' else 'dashboard'
+            ))
 
-        else:
-            flash("Invalid email or password.", "error")
-            return redirect(url_for('index'))
+        flash("Invalid email or password.", "error")
+        return redirect(url_for("index"))
 
     return render_template('login.html')
 
@@ -555,6 +549,7 @@ def admin_dashboard():
 @login_required
 def logout():
     logout_user()
+    session.clear()
     flash("You have been logged out.")
     return redirect(url_for('index'))
 
@@ -829,4 +824,3 @@ def chat():
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
