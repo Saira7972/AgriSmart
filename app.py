@@ -86,7 +86,7 @@ login_manager.login_view = "login"
 
 # -------------------------- Language Setup --------------------------
 lang_map = {"english": "en", "urdu": "ur", "sindhi": "sd"}
-conversation_history = []
+conversation_history = {}
 MAX_TURNS = 6  # Real-time multi-turn conversation
 
 # -------------------------- Translation Functions --------------------------
@@ -146,7 +146,6 @@ def load_user(user_id):
 
 
 # ---------------- ML MODELS ----------------
-# ---------------- YOLO LAZY LOADER ----------------
 def load_yolo_model():
     global YOLO, disease_model, class_names
 
@@ -786,39 +785,77 @@ def disease_detection():
 @login_required
 def chat():
     if request.method == 'GET':
+        # Initialize or clear conversation for this session
+        session_id = session.get('session_id', str(uuid.uuid4()))
+        session['session_id'] = session_id
+        conversation_history[session_id] = []
         return render_template("chatbot.html")
     
     if request.method == 'POST':
         data = request.get_json()
         user_input = data.get('message', '')
         lang = data.get('language', 'en')
-
+        
+        # Get session-specific history
+        session_id = session.get('session_id')
+        if session_id not in conversation_history:
+            conversation_history[session_id] = []
+        
+        history = conversation_history[session_id]
+        
         # 🔹 Translate user input to English
         translated_input = translate_to_english(user_input, lang)
-
-        # 🔹 Format conversation for Gemini
-        prompt = format_conversation(conversation_history, translated_input)
-
+        
+        # 🔹 Format conversation for Gemini using ONLY English versions
+        prompt = "You are AgriBot, an AI agriculture assistant. "
+        prompt += "Give practical, actionable advice for crops, fertilizers, pest control, "
+        prompt += "and irrigation. Provide approximate ranges and step-by-step instructions, "
+        prompt += "do NOT just say 'consult an expert'.\n\n"
+        
+        # Add conversation history in English only
+        for turn in history[-6:]:
+            prompt += f"User: {turn['user_en']}\nBot: {turn['bot_en']}\n"
+        
+        prompt += f"User: {translated_input}\nBot:"
+        
         # 🔹 Generate response
         response_obj = chat_model.generate_content(prompt)
         response = response_obj.text.strip()
-
+        
         # 🔹 Translate back to original language
         final_response = translate_from_english(response, lang)
-
-        # 🔹 Save conversation history
-        conversation_history.append({"user": user_input, "bot": final_response})
-        if len(conversation_history) > MAX_TURNS:
-            conversation_history.pop(0)
-
+        
+        # 🔹 Store in history with both versions
+        history.append({
+            "user_original": user_input,
+            "user_en": translated_input,
+            "bot_original": final_response,
+            "bot_en": response,
+            "language": lang
+        })
+        
+        # Keep only last 6 turns
+        if len(history) > 6:
+            history.pop(0)
+        
         # 🔹 Save logs in Supabase
         supabase.table("chat_logs").insert({
             "user_id": current_user.id,
             "question": user_input,
-            "answer": final_response
+            "answer": final_response,
+            "language": lang
         }).execute()
-
+        
         return jsonify({"answer": final_response})
+
+# Add this endpoint to clear history when language changes
+@app.route('/clear_history', methods=['POST'])
+@login_required
+def clear_history():
+    session_id = session.get('session_id')
+    if session_id and session_id in conversation_history:
+        conversation_history[session_id] = []
+    return jsonify({"status": "success"})
 
 # -------------------------- File Serve --------------------------
 @app.route('/uploads/<filename>')
